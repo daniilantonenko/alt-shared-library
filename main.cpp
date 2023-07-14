@@ -14,18 +14,23 @@ int main(void)
     CURLcode res;
     std::string readBuffer;
 
-    curl = curl_easy_init();
-
+    curl = curl_easy_init(); // returns a CURL easy handle
+    
     if (curl)
     {
         curl_easy_setopt(curl, CURLOPT_URL, "https://rdb.altlinux.org/api/export/branch_binary_packages/p10?arch=x86_64");
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
         res = curl_easy_perform(curl);
-        curl_easy_cleanup(curl);
 
-        std::cout << readBuffer << std::endl;
+        curl_easy_cleanup(curl); // close connection
+        
+        if (res != CURLE_OK){
+			fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+        }else{
+            std::cout << readBuffer << std::endl;
+        }
+		        
     }
-    
     return 0;
 }
