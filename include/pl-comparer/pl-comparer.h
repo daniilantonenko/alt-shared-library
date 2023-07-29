@@ -1,31 +1,29 @@
 #ifndef PLCOMPARER // include guard
 #define PLCOMPARER
 
-#include <iostream>
 #include <string>
 
 #include <curl/curl.h>
 #include <nlohmann/json.hpp>
 
-namespace PackageListComparer {
-int compare(std::string arch);
+namespace PackageListComparer
+{
+  int compare(std::string arch);
+  nlohmann::json loadJson(std::string first, std::string second);
 
-class Comparator {
-public:
-  Comparator();
-  Comparator(int id, std::string const &name);
-  Comparator(nlohmann::json data);
-  Comparator(nlohmann::json first, nlohmann::json second);
+  class Comparator
+  {
+  public:
+    Comparator();
+    Comparator(std::string first, std::string second);
 
-  nlohmann::json getJson();
-  nlohmann::json compare(nlohmann::json first , nlohmann::json second);
-  nlohmann::json getThisJson();
+    nlohmann::json getThisJson();
 
-private:
-  int m_id;
-  std::string m_name;
-  nlohmann::json endresult;
-};
+  private:
+    int m_id;
+    std::string m_name;
+    nlohmann::json endresult;
+  };
 } // namespace PackageListComparer
 
 #endif

@@ -1,40 +1,26 @@
+#include <fstream>
+#include <iostream>
 #include <pl-comparer/pl-comparer.h>
 
 using plc = PackageListComparer::Comparator;
 using json = nlohmann::json;
 
-int main() {
-  json jsonFirst = R"(
-		{
-			"libstart": "boo",
-			"foo": "bar"
-		}
-	)"_json;
-  json jsonSecond = R"(
-		{
-			"libstart": "boo",
-			"libnew": "wow"
-		}
-	)"_json;
+int main()
+{
+	std::cout << "Start new comprare:" << std::endl;
 
-  /*
-          // create the patch
-          json patch = json::diff(jsonFirst, jsonSecond);
+	std::string first = "x86_64";
+	std::string second = "ppc64le";
 
-          // roundtrip
-          json patched_source = jsonFirst.patch(patch);
+	plc newComprare(first, second);
+	json resultJson = newComprare.getThisJson();
 
-          // output patch and roundtrip result
-          std::cout << patch.dump(4) << "\n\n"
-                          << patched_source.dump(4) << std::endl;
-  */
+	std::ofstream myfile;
+	myfile.open("result.json");
+	myfile << resultJson.dump(4);
+	myfile.close();
 
+	std::cout << "End." << std::endl;
 
-  plc newClass(jsonFirst, jsonSecond);
-
-  json myClass = newClass.getThisJson();
-
-  std::cout << myClass.dump(4) << std::endl;
-
-  return 0;
+	return 0;
 }
