@@ -33,7 +33,55 @@ int main()
     // x86_64, ppc64le, i586, armh, aarch64, noarch
 
     json firstJ = loadJson(first);
+    /*json firstJ = R"(
+    {
+    "length": 30905,
+    "packages": [
+        {
+            "name": "0ad",
+            "version": "0.0.26"
+        },
+        {
+            "name": "1ad-debuginfo",
+            "version": "0.0.26"
+        },
+        {
+            "name": "389-ds-base",
+            "version": "2.2.3"
+        },
+        {
+            "name": "389-ds-base-debuginfo",
+            "version": "2.2.5"
+        }
+        ]
+    }
+    )"_json;*/
+    saveJsonToFile(firstJ, "firstJ");
     json secondJ = loadJson(second);
+    /*json secondJ = R"(
+    {
+    "length": 32200,
+    "packages": [
+        {
+            "name": "0ad",
+            "version": "0.0.26"
+        },
+        {
+            "name": "0ad-debuginfo",
+            "version": "0.0.26"
+        },
+        {
+            "name": "389-ds-base",
+            "version": "2.2.3"
+        },
+        {
+            "name": "389-ds-base-debuginfo",
+            "version": "2.2.3"
+        }
+        ]
+    }
+    )"_json;*/
+    saveJsonToFile(secondJ, "secondJ");
 
     json resultJson = comparing(firstJ, secondJ);
 

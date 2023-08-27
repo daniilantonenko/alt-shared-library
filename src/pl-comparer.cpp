@@ -103,6 +103,7 @@ namespace PackageListComparer
 	{
 		std::string difference;
 		json result(json::value_t::array);
+		// json result = {"missing", "extra", "updated"};
 
 		switch (source.type())
 		{
@@ -110,41 +111,37 @@ namespace PackageListComparer
 		{
 			//  first pass: traverse common elements
 			size_t i = 0, j = 0;
-			json temp_json;
+			json temp_missing, temp_extra, temp_updated;
 
 			// get diffrance packages
 			while (i < source.size() && j < target.size())
 			{
+
+				if (source[i] == target[j])
+				{
+					// same packages
+				}
+
 				if (source[i]["name"] < target[j]["name"])
 				{
 					// missing packages
-					difference = "missing";
-					if (difference != "updated")
-					{
-						temp_json.push_back(source[i]);
-					}
+					temp_missing.push_back(source[i]);
+
 					++i;
 				}
 				else if (source[i]["name"] > target[j]["name"])
 				{
 					// extra packages
-					difference = "extra";
+					temp_extra.push_back(target[j]);
+
 					++j;
 				}
 				else
 				{
-					if ((source[i]["version"] != target[j]["version"]))
+					// updated packages
+					if (source[i]["version"] > target[j]["version"])
 					{
-						std::cout << source[i].dump(4) << "\n";
-						std::cout << target[j].dump(4) << "\n";
-					}
-
-					difference = "updated";
-
-					// common packages
-					if (difference == "updated" && source[i]["version"] > target[j]["version"])
-					{
-						temp_json.push_back(source[i]);
+						temp_updated.push_back(source[i]);
 					}
 					++i;
 					++j;
@@ -153,11 +150,21 @@ namespace PackageListComparer
 
 			while (i < source.size())
 			{
-				temp_json.push_back(source[i]);
+
+				std::cout << "i < source.size() \n";
+
+				// temp_json.push_back(source[i]);
 				++i;
 			}
+			while (j < target.size())
+			{
+				std::cout << "i < target.size() \n";
+				++j;
+			}
 
-			result.push_back({{difference, temp_json}});
+			result.insert(result.end(), {"missing", temp_missing});
+			result.insert(result.end(), {"extra", temp_extra});
+			result.insert(result.end(), {"updated", temp_updated});
 
 			break;
 		}
@@ -169,7 +176,12 @@ namespace PackageListComparer
 				if (target.find(it.key()) != target.end())
 				{
 					auto temp_json = comparing(it.value(), target[it.key()]);
-					result.insert(result.end(), temp_json.begin(), temp_json.end());
+
+					// is not 0 temporary json (only true)
+					if (temp_json.size())
+					{
+						result.insert(result.end(), temp_json.begin(), temp_json.end());
+					}
 				}
 				else
 				{
