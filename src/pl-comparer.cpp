@@ -1,6 +1,4 @@
 #include <pl-comparer/pl-comparer.h>
-#include <iostream>
-#include <iomanip>
 
 using json = nlohmann::json;
 
