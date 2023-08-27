@@ -17,7 +17,7 @@ target_include_directories(${PROJECT_NAME}
 # Минимальные требования кода
 set_target_properties(
   pl-comparer PROPERTIES
-  CXX_STANDARD 17
+  CXX_STANDARD 11
   CXX_STANDARD_REQUIRED ON
   SOVERSION  1
   PUBLIC_HEADER include/pl-comparer/pl-comparer.h
