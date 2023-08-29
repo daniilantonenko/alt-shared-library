@@ -45,60 +45,6 @@ namespace PackageListComparer
 		return 0;
 	}
 
-	// Json Simplification (join by same keys value "op")
-	json simpler(const json &source)
-	{
-		json result;
-
-		// Search by key - value
-		for (auto &element : source.items())
-		{
-			const auto &key = element.value();
-
-			/*std::cout << "=========\t" << key.is_structured() << " - " << key.is_primitive() << " - " << key.is_object() << " - " << key.size() << "\t =========\t\n"
-			 << std::endl;
-			std::cout << "=========\t" << std::setw(2) << key << std::endl;*/
-
-			// key = key.unflatten();
-
-			// Check the structure and content of the desired key "op" and "path"
-			if (key.is_structured() && key.contains("op") && key.contains("path"))
-			{
-
-				// Get pointer
-				std::string operation = key["op"];
-				const char *pointerOperation = const_cast<char *>(operation.c_str());
-
-				// Get path
-				auto path = key["path"];
-
-				// Get value
-				auto value = key["value"];
-
-				if (key.contains("value"))
-				{
-					// NOTE do a recursive pass ?
-					// std::cout << std::setw(2) << path << " | " << value << std::endl;
-
-					// Insert key with value
-					auto jsonData = json::object_t::value_type(path, value);
-					// json jsonData = {"path", "value"};
-
-					result[pointerOperation].push_back(jsonData);
-				}
-				else
-				{
-					// Insert key without value
-					result[pointerOperation].push_back(path);
-				}
-			}
-		}
-
-		// result.unflatten();
-
-		return result;
-	}
-
 	json comparing(const json &source, const json &target)
 	{
 		std::string difference;
@@ -207,11 +153,5 @@ namespace PackageListComparer
 
 		return result;
 	}
-
-	Comparator::Comparator() {}
-	Comparator::Comparator(std::string first, std::string second)
-		: patch(json::diff(loadJson(first), loadJson(second))) {}
-
-	json Comparator::getThisJson() { return this->patch; }
 
 }
