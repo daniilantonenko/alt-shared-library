@@ -1,6 +1,6 @@
 #include <fstream>
 #include <iostream>
-#include <pl-comparer/pl-comparer.h>
+#include <PLcomparer/PLcomparer.h>
 
 using namespace std;
 using namespace PackageListComparer;

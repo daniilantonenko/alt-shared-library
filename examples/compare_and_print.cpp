@@ -1,27 +1,11 @@
 #include <fstream>
 #include <iostream>
-#include <pl-comparer/pl-comparer.h>
+#include <PLcomparer/PLcomparer.h>
 
 using namespace std;
 using namespace PackageListComparer;
 
 using json = nlohmann::json;
-
-// Save received data to file
-void saveJsonToFile(const json &data, const string name)
-{
-    try
-    {
-        ofstream file;
-        file.open(name + ".json");
-        file << data.dump(4);
-        file.close();
-    }
-    catch (const char *str)
-    {
-        cerr << "Caught exception:\n";
-    }
-}
 
 int main()
 {
