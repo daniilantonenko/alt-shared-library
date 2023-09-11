@@ -27,17 +27,30 @@ std::string second = "x86_64";
 json source = loadJson(first);
 json target = loadJson(second);
 ```
+
 ### Run comparison
 Make comparison and get result:
 ```cpp
 nlohmann::json resultJson = comparing(first, second);
 ```
 
+### CLI utility
+Then the command line is given as:
+```bash
+PLcomparer -s aarch64 -t x86_64 -p
+```
+
+- `s [branch]` Branch source name.
+- `t [branch]` Branch target name.
+- `p` Print Json comparison result.
+- `d` Print beautiful Json dump comparison result.
+- `f` Saving beautiful Json dump comparison result.
+- `h` Print this help message and exit.
 
 ## Plan
 - [X] Basic comparison functionality
 - [X] Get lists of binary packages
-- [ ] CLI utility
+- [X] CLI utility
 - [ ] Installation by FHS standard
 - [ ] Getting arch by API
 - [ ] Selecting a branch

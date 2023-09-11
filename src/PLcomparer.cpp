@@ -1,4 +1,5 @@
 #include <CLI/CLI.hpp>
+#include <fstream>
 #include <iostream>
 #include <string>
 
@@ -8,38 +9,83 @@ using namespace PackageListComparer;
 
 using json = nlohmann::json;
 
+void saveJsonToFile(const json &data, const std::string name);
+
 int main(int argc, char **argv)
 {
-    // CLI::App app;
+
     CLI::App app{"PLcomparer \nExample branches: x86_64, ppc64le, i586, armh, aarch64, noarch \n"};
+
+    // Flags - Actions with results
+    bool print_flag{false};
+    app.add_flag("-p,--print", print_flag, "Print Json comparison result")->group("Result");
+
+    bool dump_flag{false};
+    app.add_flag("-d,--dump", dump_flag, "Print beautiful Json dump comparison result")->group("Result");
+
+    bool save_flag{false};
+    app.add_flag("-f,--file", save_flag, "Saving beautiful Json dump comparison result")->group("Result");
+
+    // JSON
     std::string sourceBranch;
-    app.add_option("-s,--source", sourceBranch, "Branch source name");
+    app.add_option("-s,--source", sourceBranch, "Branch source name")->required();
 
     std::string targetBranch;
-    app.add_option("-t,--target", targetBranch, "Branch target name");
+    app.add_option("-t,--target", targetBranch, "Branch target name")->required();
+
+    std::string actionСomparison = "default";
+    app.add_option("-c,--comp", actionСomparison, "Сomparison action");
 
     CLI11_PARSE(app, argc, argv);
 
-    //std::cout << "Source: " << sourceBranch << ", direct count: " << app.count("-s") << std::endl;
-    //<< ", opt count: " << opt->count() << std::endl;
-
-    //std::cout << "Target: " << targetBranch << ", direct count: " << app.count("-t") << std::endl;
-    //<< ", opt count: " << opt->count() << std::endl;
-
     if (app.count("-s") && app.count("-t"))
     {
-        std::cout << "BINGO" << std::endl;
-        /*std::string first = "aarch64";
-        std::string second = "x86_64";
+        std::string first = sourceBranch;
+        std::string second = targetBranch;
 
-        json firstJ = loadJson(sourceBranch);
-        json secondJ = loadJson(targetBranch);
+        json firstJ = loadJson(first);
+        json secondJ = loadJson(second);
 
         json resultJson = comparing(firstJ, secondJ);
 
-        std::cout << "resultJson:\n"
-                  << resultJson.dump(4) << "\n";*/
+        if (print_flag)
+        { 
+            std::cout << resultJson << std::endl;
+        }
+        else if (dump_flag)
+        {
+            std::cout << resultJson.dump(4) << "\n";
+        }
+        else if (save_flag)
+        {
+            saveJsonToFile(resultJson, "resultJson");
+        }
+        else
+        {
+            // TODO: summary result
+            std::cout << "Summary:\nsize: "
+                      << (int) resultJson.size() << "\n";
+        }
     }
 
     return 0;
+}
+
+// Save received data to file
+void saveJsonToFile(const json &data, const std::string name)
+{
+    try
+    {
+        std::ofstream file;
+        std::string filename = name + ".json";
+        file.open(filename);
+        file << data.dump(4);
+        file.close();
+
+        std::cout << "File \"" << filename << "\" was saved successfully.\n";
+    }
+    catch (const char *str)
+    {
+        std::cerr << "Caught exception:\n";
+    }
 }

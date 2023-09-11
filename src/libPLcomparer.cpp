@@ -1,7 +1,5 @@
 #include <PLcomparer/PLcomparer.h>
 
-using json = nlohmann::json;
-
 namespace PackageListComparer
 {
 
@@ -12,7 +10,7 @@ namespace PackageListComparer
 		return size * nmemb;
 	}
 
-	json loadJson(std::string arch)
+	nlohmann::json loadJson(std::string arch)
 	{
 		CURL *curl;
 		CURLcode res;
@@ -39,25 +37,25 @@ namespace PackageListComparer
 			}
 			else
 			{
-				return json::parse(readBuffer);
+				return nlohmann::json::parse(readBuffer);
 			}
 		}
 		return 0;
 	}
 
-	json comparing(const json &source, const json &target)
+	nlohmann::json comparing(const nlohmann::json &source, const nlohmann::json &target)
 	{
 		std::string difference;
-		json result(json::value_t::array);
+		nlohmann::json result(nlohmann::json::value_t::array);
 		// json result = {"missing", "extra", "updated"};
 
 		switch (source.type())
 		{
-		case json::value_t::array:
+		case nlohmann::json::value_t::array:
 		{
 			//  first pass: traverse common elements
 			size_t i = 0, j = 0;
-			json temp_missing, temp_extra, temp_updated;
+			nlohmann::json temp_missing, temp_extra, temp_updated;
 
 			// get diffrance packages
 			while (i < source.size() && j < target.size())
@@ -114,7 +112,7 @@ namespace PackageListComparer
 
 			break;
 		}
-		case json::value_t::object:
+		case nlohmann::json::value_t::object:
 		{
 			//  first pass: traverse this object's elements
 			for (auto it = source.cbegin(); it != source.cend(); ++it)
@@ -137,14 +135,14 @@ namespace PackageListComparer
 
 			break;
 		}
-		case json::value_t::null:
-		case json::value_t::string:
-		case json::value_t::boolean:
-		case json::value_t::number_integer:
-		case json::value_t::number_unsigned:
-		case json::value_t::number_float:
-		case json::value_t::binary:
-		case json::value_t::discarded:
+		case nlohmann::json::value_t::null:
+		case nlohmann::json::value_t::string:
+		case nlohmann::json::value_t::boolean:
+		case nlohmann::json::value_t::number_integer:
+		case nlohmann::json::value_t::number_unsigned:
+		case nlohmann::json::value_t::number_float:
+		case nlohmann::json::value_t::binary:
+		case nlohmann::json::value_t::discarded:
 		default:
 		{
 			break;

@@ -34,6 +34,7 @@ add_executable(example2 examples/compare_and_print.cpp)
 
 find_package(CURL REQUIRED)
 
+target_link_libraries(PLcomparer libPLcomparer CURL::libcurl)
 target_link_libraries(example1 libPLcomparer CURL::libcurl)
 target_link_libraries(example2 libPLcomparer CURL::libcurl)
 
