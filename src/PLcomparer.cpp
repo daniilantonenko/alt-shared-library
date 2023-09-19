@@ -40,6 +40,7 @@ int main(int argc, char **argv)
 
     if (app.count("-s") && app.count("-t"))
     {
+        // TODO: Check architecture branch input data for availability
         std::string first = sourceBranch;
         std::string second = targetBranch;
 

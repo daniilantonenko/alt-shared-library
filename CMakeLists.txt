@@ -2,23 +2,26 @@
 cmake_minimum_required(VERSION 3.14) 
 
 # Project name and availability check C++ compiler
-project(libPLcomparer VERSION 1.0
+project(PLcomparer VERSION 1.0
   DESCRIPTION "Package list comparer"
   LANGUAGES CXX)
 
-set(BUILD_SHARED_LIBS ON)
+# Add a library to the project
+add_library(${PROJECT_NAME} SHARED src/libPLcomparer.cpp)
 
-add_library(libPLcomparer SHARED
-  src/libPLcomparer.cpp)
+# Add sources to a target
+target_sources(${PROJECT_NAME} 
+    PRIVATE src/libPLcomparer.cpp)
 
-target_include_directories(${PROJECT_NAME}
-    PUBLIC ${PROJECT_SOURCE_DIR}/include)
+# Add include directories to a target
+target_include_directories(${PROJECT_NAME} PRIVATE .)
 
 # Minimum code requirements
 set_target_properties(
-  libPLcomparer PROPERTIES
+  ${PROJECT_NAME} PROPERTIES
   CXX_STANDARD 11
   CXX_STANDARD_REQUIRED ON
+  VERSION ${PROJECT_VERSION}
   SOVERSION  1
   PUBLIC_HEADER include/PLcomparer/PLcomparer.h
 )
@@ -26,15 +29,20 @@ set_target_properties(
 include_directories(include/)
 
 # CLI libPLcomparer
-add_executable(PLcomparer src/PLcomparer.cpp)
-
-# Executables from the above sources
-add_executable(example1 examples/compare_and_save.cpp)
-add_executable(example2 examples/compare_and_print.cpp)
+add_executable(app src/PLcomparer.cpp)
 
 find_package(CURL REQUIRED)
 
-target_link_libraries(PLcomparer libPLcomparer CURL::libcurl)
-target_link_libraries(example1 libPLcomparer CURL::libcurl)
-target_link_libraries(example2 libPLcomparer CURL::libcurl)
+target_link_libraries(app ${PROJECT_NAME} CURL::libcurl)
 
+# Examples
+#add_subdirectory(examples)
+
+### Install ###
+
+# Standard GNU Directories
+#include(GNUInstallDirs)
+
+#install(TARGETS ${PROJECT_NAME}
+#    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+#    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})

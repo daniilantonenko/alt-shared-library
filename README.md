@@ -47,10 +47,17 @@ PLcomparer -s aarch64 -t x86_64 -p
 - `f` Saving beautiful Json dump comparison result.
 - `h` Print this help message and exit.
 
+
+### Installing the library from source files
+Automatic compilation of CMake with subsequent installation into the system:
+```bash
+./install.sh
+```
+
 ## Plan
 - [X] Basic comparison functionality
 - [X] Get lists of binary packages
 - [X] CLI utility
-- [ ] Installation by FHS standard
+- [X] Installation by FHS standard
 - [ ] Getting arch by API
 - [ ] Selecting a branch
