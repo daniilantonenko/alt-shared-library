@@ -1,5 +1,5 @@
 # Package list comprare
-Shared library for comparing binary packages of 2 branches. 
+Shared library for comparing binary packages of 2 arch. 
 Works only with json sorted in descending order!
 
 Output JSON structure:
@@ -22,10 +22,11 @@ using json = nlohmann::json;
 ### Getting binary packages
 Specify architecture for comparison (ALT Linux p10). For example: X86_64, ppc64le, i586, armh, aarch64, noarch.
 ```cpp
+std::string branch = "p10";
 std::string first = "aarch64";
 std::string second = "x86_64";
-json source = loadJson(first);
-json target = loadJson(second);
+json source = loadJson(branch, first);
+json target = loadJson(branch, second);
 ```
 
 ### Run comparison
@@ -37,11 +38,12 @@ nlohmann::json resultJson = comparing(first, second);
 ### CLI utility
 Then the command line is given as:
 ```bash
-PLcomparer -s aarch64 -t x86_64 -p
+PLcomparer -b p10 -s aarch64 -t x86_64 -p
 ```
 
-- `s [branch]` Branch source name.
-- `t [branch]` Branch target name.
+- `b [branch]` Branch selection (last branch by default)
+- `s [arch]` Arch source name.
+- `t [arch]` Arch target name.
 - `p` Print Json comparison result.
 - `d` Print beautiful Json dump comparison result.
 - `f` Saving beautiful Json dump comparison result.
@@ -59,5 +61,5 @@ Automatic compilation of CMake with subsequent installation into the system:
 - [X] Get lists of binary packages
 - [X] CLI utility
 - [X] Installation by FHS standard
+- [X] Selecting a branch
 - [ ] Getting arch by API
-- [ ] Selecting a branch
