@@ -14,7 +14,7 @@ void saveJsonToFile(const json &data, const std::string name);
 int main(int argc, char **argv)
 {
 
-    CLI::App app{"PLcomparer \nExample branches: x86_64, ppc64le, i586, armh, aarch64, noarch \n"};
+    CLI::App app{"PLcomparer \nExample architectures: x86_64, ppc64le, i586, armh, aarch64, noarch \n"};
 
     // Flags - Actions with results
     bool print_flag{false};
@@ -26,12 +26,14 @@ int main(int argc, char **argv)
     bool save_flag{false};
     app.add_flag("-f,--file", save_flag, "Saving beautiful Json dump comparison result")->group("Result");
 
-    // JSON
-    std::string sourceBranch;
-    app.add_option("-s,--source", sourceBranch, "Branch source name")->required();
+    std::string branch;
+    app.add_option("-b,--branch", branch, "Branch name")->required();
 
-    std::string targetBranch;
-    app.add_option("-t,--target", targetBranch, "Branch target name")->required();
+    std::string sourceArch;
+    app.add_option("-s,--source", sourceArch, "Arch source name")->required();
+
+    std::string targetArch;
+    app.add_option("-t,--target", targetArch, "Arch target name")->required();
 
     std::string actionСomparison = "default";
     app.add_option("-c,--comp", actionСomparison, "Сomparison action");
@@ -40,9 +42,9 @@ int main(int argc, char **argv)
 
     if (app.count("-s") && app.count("-t"))
     {
-        // TODO: Check architecture branch input data for availability
-        std::string first = sourceBranch;
-        std::string second = targetBranch;
+        // TODO: Check architecture Arch input data for availability
+        std::string first = sourceArch;
+        std::string second = targetArch;
 
         json firstJ = loadJson(first);
         json secondJ = loadJson(second);
