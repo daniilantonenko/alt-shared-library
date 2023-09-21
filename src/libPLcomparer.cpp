@@ -10,7 +10,7 @@ namespace PackageListComparer
 		return size * nmemb;
 	}
 
-	nlohmann::json loadJson(std::string arch)
+	nlohmann::json loadJson(const std::string branch, const std::string arch)
 	{
 		CURL *curl;
 		CURLcode res;
@@ -18,9 +18,9 @@ namespace PackageListComparer
 
 		curl = curl_easy_init(); // returns a CURL easy handle
 
-		if (curl && !arch.empty())
+		if (curl && !branch.empty() && !arch.empty())
 		{
-			std::string query = "p10?arch=" + arch;
+			std::string query = branch + "?arch=" + arch;
 			std::string url =
 				"https://rdb.altlinux.org/api/export/branch_binary_packages/" + query;
 			curl_easy_setopt(curl, CURLOPT_URL, url.c_str());

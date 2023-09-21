@@ -9,7 +9,7 @@
 // namespace PackageListComparer 
 namespace PackageListComparer
 {
-  nlohmann::json loadJson(std::string arch);
+  nlohmann::json loadJson(const std::string branch, const std::string arch);
   nlohmann::json comparing(const nlohmann::json &source, const nlohmann::json &target);
 } 
 

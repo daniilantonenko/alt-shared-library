@@ -26,17 +26,14 @@ int main(int argc, char **argv)
     bool save_flag{false};
     app.add_flag("-f,--file", save_flag, "Saving beautiful Json dump comparison result")->group("Result");
 
-    std::string branch;
-    app.add_option("-b,--branch", branch, "Branch name")->required();
+    std::string branch = "p10"; // by default compare the latest branch
+    app.add_option("-b,--branch", branch, "Branch name (by default compare the latest branch)"); 
 
     std::string sourceArch;
     app.add_option("-s,--source", sourceArch, "Arch source name")->required();
 
     std::string targetArch;
     app.add_option("-t,--target", targetArch, "Arch target name")->required();
-
-    std::string actionСomparison = "default";
-    app.add_option("-c,--comp", actionСomparison, "Сomparison action");
 
     CLI11_PARSE(app, argc, argv);
 
@@ -46,8 +43,8 @@ int main(int argc, char **argv)
         std::string first = sourceArch;
         std::string second = targetArch;
 
-        json firstJ = loadJson(first);
-        json secondJ = loadJson(second);
+        json firstJ = loadJson(branch, first);
+        json secondJ = loadJson(branch, second);
 
         json resultJson = comparing(firstJ, secondJ);
 
@@ -66,8 +63,12 @@ int main(int argc, char **argv)
         else
         {
             // TODO: summary result
-            std::cout << "Summary:\nsize: "
-                      << (int) resultJson.size() << "\n";
+            std::cout << "Summary:\n"
+                      << "Branch: " << branch << "\n"
+                      << "Source arch: " << sourceArch << "\n"
+                      << "Target arch: " << targetArch << "\n"
+                      << "Comparison size: " << (int) resultJson.size() << "\n"
+                      << "Comparison sizeof: " << (int) sizeof(resultJson) << "\n";
         }
     }
 
