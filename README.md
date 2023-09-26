@@ -1,5 +1,5 @@
 # Package list comprare
-Shared library for comparing binary packages of 2 arch. 
+Shared library for comparing binary packages of 2 branches. 
 Works only with json sorted in descending order!
 
 Output JSON structure:
@@ -20,13 +20,13 @@ using json = nlohmann::json;
 ```
 
 ### Getting binary packages
-Specify architecture for comparison (ALT Linux p10). For example: X86_64, ppc64le, i586, armh, aarch64, noarch.
+
 ```cpp
-std::string branch = "p10";
-std::string first = "aarch64";
-std::string second = "x86_64";
-json source = loadJson(branch, first);
-json target = loadJson(branch, second);
+std::string arch = "x86_64";
+std::string first = "sisyphus";
+std::string second = "p10";
+json source = loadJson(first, arch);
+json target = loadJson(second, arch);
 ```
 
 ### Run comparison
@@ -41,9 +41,9 @@ Then the command line is given as:
 PLcomparer -b p10 -s aarch64 -t x86_64 -p
 ```
 
-- `b [branch]` Branch selection (last branch by default)
-- `s [arch]` Arch source name.
-- `t [arch]` Arch target name.
+- `a [branch]` Arch selection.
+- `s [arch]` Branch source name.
+- `t [arch]` Branch target name.
 - `p` Print Json comparison result.
 - `d` Print beautiful Json dump comparison result.
 - `f` Saving beautiful Json dump comparison result.
