@@ -14,7 +14,7 @@ void saveJsonToFile(const json &data, const std::string name);
 int main(int argc, char **argv)
 {
 
-    CLI::App app{"PLcomparer \nExample architectures: x86_64, ppc64le, i586, armh, aarch64, noarch \n"};
+    CLI::App app{"PLcomparer \nExample branches: sisyphus и p10 \n"};
 
     // Flags - Actions with results
     bool print_flag{false};
@@ -26,25 +26,26 @@ int main(int argc, char **argv)
     bool save_flag{false};
     app.add_flag("-f,--file", save_flag, "Saving beautiful Json dump comparison result")->group("Result");
 
-    std::string branch = "p10"; // by default compare the latest branch
-    app.add_option("-b,--branch", branch, "Branch name (by default compare the latest branch)"); 
+    std::string sourceBranch;
+    app.add_option("-s,--source", sourceBranch, "Branch source name")->required();
 
-    std::string sourceArch;
-    app.add_option("-s,--source", sourceArch, "Arch source name")->required();
+    std::string targetBranch;
+    app.add_option("-t,--target", targetBranch, "Branch target name")->required();
 
-    std::string targetArch;
-    app.add_option("-t,--target", targetArch, "Arch target name")->required();
+    std::string arch;
+    app.add_option("-a,--arch", arch, "Arch name")->required();
+
 
     CLI11_PARSE(app, argc, argv);
 
     if (app.count("-s") && app.count("-t"))
     {
-        // TODO: Check architecture Arch input data for availability
-        std::string first = sourceArch;
-        std::string second = targetArch;
+        // TODO: input data for availability
+        std::string first = sourceBranch;
+        std::string second = targetBranch;
 
-        json firstJ = loadJson(branch, first);
-        json secondJ = loadJson(branch, second);
+        json firstJ = loadJson(first, arch);
+        json secondJ = loadJson(second, arch);
 
         json resultJson = comparing(firstJ, secondJ);
 
@@ -64,9 +65,9 @@ int main(int argc, char **argv)
         {
             // TODO: summary result
             std::cout << "Summary:\n"
-                      << "Branch: " << branch << "\n"
-                      << "Source arch: " << sourceArch << "\n"
-                      << "Target arch: " << targetArch << "\n"
+                      << "Arch: " << arch << "\n"
+                      << "Source branch: " << sourceBranch << "\n"
+                      << "Target branch: " << targetBranch << "\n"
                       << "Comparison size: " << (int) resultJson.size() << "\n"
                       << "Comparison sizeof: " << (int) sizeof(resultJson) << "\n";
         }
