@@ -47,7 +47,6 @@ namespace PackageListComparer
 	{
 		std::string difference;
 		nlohmann::json result(nlohmann::json::value_t::array);
-		// json result = {"missing", "extra", "updated"};
 
 		switch (source.type())
 		{
@@ -60,25 +59,30 @@ namespace PackageListComparer
 			// get diffrance packages
 			while (i < source.size() && j < target.size())
 			{
+				// std::cout << "source: " << source[i] << "\n";
+				// std::cout << "target: " << target[j] << "\n";
 
 				if (source[i] == target[j])
 				{
 					// same packages
+					// std::cout << "The same: " << source[i] << "\n";
 				}
 
-				if (source[i]["name"] < target[j]["name"])
-				{
-					// missing packages
-					temp_missing.push_back(source[i]);
-
-					++i;
-				}
-				else if (source[i]["name"] > target[j]["name"])
+				if (source[i]["name"] > target[j]["name"])
 				{
 					// extra packages
-					temp_extra.push_back(target[j]);
+					// std::cout << "MISSING \n";
+					// temp_missing.push_back(target[j]);
 
 					++j;
+				}
+				else if (source[i]["name"] < target[j]["name"])
+				{
+					// missing packages
+					std::cout << "EXTRA \n";
+					temp_extra.push_back(source[i]);
+
+					++i;
 				}
 				else
 				{
@@ -87,6 +91,10 @@ namespace PackageListComparer
 					{
 						temp_updated.push_back(source[i]);
 					}
+					else
+					{
+						// std::cout << "WTF: " << source[i] << "\n";
+					}
 					++i;
 					++j;
 				}
@@ -94,15 +102,13 @@ namespace PackageListComparer
 
 			while (i < source.size())
 			{
-
-				std::cout << "i < source.size() \n";
-
-				// temp_json.push_back(source[i]);
+				// std::cout << "i < source.size() \n";
 				++i;
 			}
 			while (j < target.size())
 			{
-				std::cout << "i < target.size() \n";
+				// std::cout << "MISSING \n";
+				temp_missing.push_back(target[j]);
 				++j;
 			}
 
