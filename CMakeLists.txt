@@ -36,7 +36,14 @@ find_package(CURL REQUIRED)
 target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}-shared CURL::libcurl)
 
 # Examples
-#add_subdirectory(examples)
+#add_subdirectory(examples build/examples)
+
+# Tests
+
+enable_testing()
+add_subdirectory(tests)
+
+
 
 ### Install ###
 
