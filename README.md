@@ -62,4 +62,5 @@ Automatic compilation of CMake with subsequent installation into the system:
 - [X] CLI utility
 - [X] Installation by FHS standard
 - [X] Selecting a branch
+- [X] Added unit tests
 - [ ] Getting arch by API

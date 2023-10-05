@@ -10,6 +10,82 @@ namespace PackageListComparer
 		return size * nmemb;
 	}
 
+	std::vector<int> splitVersion(const std::string &version)
+	{
+		std::vector<int> result;
+		size_t start = 0;
+		size_t end = version.find('.');
+
+		while (end != std::string::npos)
+		{
+			try
+			{
+				result.push_back(std::stoi(version.substr(start, end - start)));
+			}
+			catch (const std::exception &e)
+			{
+				// Handle the exception skipping the invalid component
+				// std::cerr << "Invalid version component: " << version.substr(start, end - start) << std::endl;
+			}
+			start = end + 1;
+			end = version.find('.', start);
+		}
+
+		try
+		{
+			result.push_back(std::stoi(version.substr(start)));
+		}
+		catch (const std::exception &e)
+		{
+			// Handle the exception skipping the invalid component
+			// std::cerr << "Invalid version component: " << version.substr(start) << std::endl;
+		}
+
+		return result;
+	}
+
+	int CompareVersions(std::string first, std::string second)
+	{
+		// Replace bad characters
+		std::replace(first.begin(), first.end(), '_', '.');
+		std::replace(second.begin(), second.end(), '_', '.');
+
+		std::vector<int> version1 = splitVersion(first);
+		std::vector<int> version2 = splitVersion(second);
+
+		/*for (auto i : version1)
+			std::cout << i << ',';
+
+		std::cout << std::endl;
+
+		for (auto i : version2)
+			std::cout << i << ',';
+
+		std::cout << std::endl;*/
+
+		int maxLength = std::max(version1.size(), version2.size());
+
+		for (int i = 0; i < maxLength; ++i)
+		{
+
+			int value1 = (i < version1.size()) ? version1[i] : 0;
+			int value2 = (i < version2.size()) ? version2[i] : 0;
+
+			// std::cout << value1 << " |  ?  | " << value2 << " \n";
+
+			if (value1 > value2)
+			{
+				return 1;
+			}
+			else if (value1 < value2)
+			{
+				return -1;
+			}
+		}
+
+		return 0;
+	}
+
 	nlohmann::json loadJson(const std::string branch, const std::string arch)
 	{
 		CURL *curl;
@@ -79,21 +155,23 @@ namespace PackageListComparer
 				else if (source[i]["name"] < target[j]["name"])
 				{
 					// missing packages
-					std::cout << "EXTRA \n";
+					// std::cout << "EXTRA \n";
 					temp_extra.push_back(source[i]);
 
 					++i;
 				}
 				else
 				{
+
 					// updated packages
-					if (source[i]["version"] > target[j]["version"])
+					std::string versionSource = source[i]["version"];
+					std::string versionTarget = target[j]["version"];
+					if (CompareVersions(versionSource, versionTarget) == 1)
 					{
+						/*std::cout << versionSource << " |  >  | "
+								  << versionTarget
+								  << " : " << source[i]["name"] << " \n";*/
 						temp_updated.push_back(source[i]);
-					}
-					else
-					{
-						// std::cout << "WTF: " << source[i] << "\n";
 					}
 					++i;
 					++j;
