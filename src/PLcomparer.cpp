@@ -33,7 +33,6 @@ int main(int argc, char **argv)
     std::string arch;
     app.add_option("-a,--arch", arch, "Arch name")->required();
 
-
     CLI11_PARSE(app, argc, argv);
 
     if (app.count("-s") && app.count("-t"))
@@ -48,8 +47,8 @@ int main(int argc, char **argv)
         json resultJson = comparing(firstJ, secondJ);
 
         if (print_flag)
-        { 
-            std::cout << resultJson << std::endl;
+        {
+            std::cout << resultJson << "\n";
         }
         else if (dump_flag)
         {
@@ -66,8 +65,8 @@ int main(int argc, char **argv)
                       << "Arch: " << arch << "\n"
                       << "Source branch: " << sourceBranch << "\n"
                       << "Target branch: " << targetBranch << "\n"
-                      << "Comparison size: " << (int) resultJson.size() << "\n"
-                      << "Comparison sizeof: " << (int) sizeof(resultJson) << "\n";
+                      << "Comparison size: " << (int)resultJson.size() << "\n"
+                      << "Comparison sizeof: " << (int)sizeof(resultJson) << "\n";
         }
     }
 
@@ -82,7 +81,12 @@ void saveJsonToFile(const json &data, const std::string name)
         std::ofstream file;
         std::string filename = name + ".json";
         file.open(filename);
-        file << data.dump(4);
+
+        if (file.is_open())
+        {
+            file << data.dump(4) << std::endl;
+        }
+        
         file.close();
 
         std::cout << "File \"" << filename << "\" was saved successfully.\n";
