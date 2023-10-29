@@ -6,15 +6,24 @@ project(PLcomparer VERSION 1.0
   DESCRIPTION "Package list comparer"
   LANGUAGES CXX)
 
-# Add a library to the project
-add_library(${PROJECT_NAME}-shared SHARED src/libPLcomparer.cpp)
+include(GNUInstallDirs)
+option(LIB_BUILD_EXAMPLES "Build examples" OFF)
+option(LIB_BUILD_TESTS "Build tests" OFF)
+option(LIB_BUILD_INSTALL "Install lib" OFF)
+option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
+
+# Set the source files for the library
+set(SOURCES src/libPLcomparer.cpp)
+
+# Create the shared library target
+add_library(${PROJECT_NAME}-shared SHARED ${SOURCES})
 
 # Add sources to a target
 target_sources(${PROJECT_NAME}-shared 
     PRIVATE src/libPLcomparer.cpp)
 
-# Add include directories to a target
-target_include_directories(${PROJECT_NAME}-shared PRIVATE .)
+# Set the include directories for the library
+target_include_directories(${PROJECT_NAME}-shared PUBLIC include)
 
 # Minimum code requirements
 set_target_properties(
@@ -23,7 +32,6 @@ set_target_properties(
   CXX_STANDARD_REQUIRED ON
   VERSION ${PROJECT_VERSION}
   SOVERSION  1
-  PUBLIC_HEADER include/PLcomparer/PLcomparer.h
 )
 
 include_directories(include/)
@@ -35,26 +43,30 @@ find_package(CURL REQUIRED)
 
 target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}-shared CURL::libcurl)
 
-# Examples
-# add_subdirectory(examples)
 
-# Tests
+if(LIB_BUILD_EXAMPLES)
+  add_subdirectory(examples)
+endif()
 
-enable_testing()
-add_subdirectory(tests)
+if(LIB_BUILD_TESTS)
+  target_compile_options(${PROJECT_NAME}-shared PUBLIC -fexceptions)
+  enable_testing()
+  add_subdirectory(tests)
+endif()
 
+if(LIB_BUILD_INSTALL)
+  set(CMAKE_SKIP_BUILD_RPATH  FALSE)
+  set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+  SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
-
-### Install ###
-
-if (UNIX)
-  include(GNUInstallDirs)
 
   install(TARGETS ${PROJECT_NAME}-shared
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+  
+  install(DIRECTORY include/
+      TYPE INCLUDE
+      COMPONENT ${PROJECT_NAME}-shared)
 
   install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_BINDIR})   
-
-  set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
-endif ()
+endif()

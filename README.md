@@ -50,11 +50,9 @@ PLcomparer -b p10 -s aarch64 -t x86_64 -p
 - `h` Print this help message and exit.
 
 
-### Installing the library from source files
-Automatic compilation of CMake with subsequent installation into the system:
-```bash
-./install.sh
-```
+## Building and installation
+
+For building and installation instructions refer to [INSTALL.md](INSTALL.md).
 
 ## Plan
 - [X] Basic comparison functionality

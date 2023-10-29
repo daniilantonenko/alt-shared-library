@@ -1,7 +1,6 @@
 #!/bin/bash
 
-mkdir build
+cmake -B build  -DLIB_BUILD_INSTALL=ON
 cd build
-cmake -DBUILD_SHARED_LIBS=1 ..
-make
 make install
+PLcomparer
