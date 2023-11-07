@@ -38,7 +38,7 @@ nlohmann::json resultJson = comparing(first, second);
 ### CLI utility
 Then the command line is given as:
 ```bash
-PLcomparer -b p10 -s aarch64 -t x86_64 -p
+plcomparer -a x86_64 -s sisyphus -t p10
 ```
 
 - `a [branch]` Arch selection.

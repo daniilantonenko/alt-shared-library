@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.14) 
 
 # Project name and availability check C++ compiler
-project(PLcomparer VERSION 1.0
+project(plcomparer VERSION 1.0
   DESCRIPTION "Package list comparer"
   LANGUAGES CXX)
 
@@ -10,63 +10,71 @@ include(GNUInstallDirs)
 option(LIB_BUILD_EXAMPLES "Build examples" OFF)
 option(LIB_BUILD_TESTS "Build tests" OFF)
 option(LIB_BUILD_INSTALL "Install lib" OFF)
-option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
 
-# Set the source files for the library
-set(SOURCES src/libPLcomparer.cpp)
+# Add executable
+add_executable(${PROJECT_NAME} src/PLcomparer.cpp)
 
-# Create the shared library target
-add_library(${PROJECT_NAME}-shared SHARED ${SOURCES})
-
-# Add sources to a target
-target_sources(${PROJECT_NAME}-shared 
-    PRIVATE src/libPLcomparer.cpp)
-
-# Set the include directories for the library
-target_include_directories(${PROJECT_NAME}-shared PUBLIC include)
+# Add shared library
+add_library(libplcomparer SHARED src/libPLcomparer.cpp)
 
 # Minimum code requirements
 set_target_properties(
-  ${PROJECT_NAME}-shared PROPERTIES
+  libplcomparer PROPERTIES
   CXX_STANDARD 11
   CXX_STANDARD_REQUIRED ON
   VERSION ${PROJECT_VERSION}
   SOVERSION  1
+  PUBLIC_HEADER include/PLcomparer/PLcomparer.h
 )
 
 include_directories(include/)
 
-# CLI libPLcomparer
-add_executable(${PROJECT_NAME} src/PLcomparer.cpp)
-
 find_package(CURL REQUIRED)
 
-target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}-shared CURL::libcurl)
+# Link executable with shared library
+target_link_libraries(${PROJECT_NAME} PRIVATE libplcomparer CURL::libcurl)
+set_target_properties(libplcomparer PROPERTIES OUTPUT_NAME "plcomparer")
+set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-Wl,-rpath,./")
 
+# Path to the directory with include files
+target_include_directories(libplcomparer PUBLIC
+    ${PROJECT_SOURCE_DIR}/include
+)
+
+############################################################
+# Examples
+############################################################
 
 if(LIB_BUILD_EXAMPLES)
   add_subdirectory(examples)
 endif()
 
+############################################################
+# Testing
+############################################################
+
 if(LIB_BUILD_TESTS)
-  target_compile_options(${PROJECT_NAME}-shared PUBLIC -fexceptions)
+  target_compile_options(${PROJECT_NAME} PUBLIC -fexceptions)
   enable_testing()
   add_subdirectory(tests)
 endif()
 
+############################################################
+# Install
+############################################################
+
 if(LIB_BUILD_INSTALL)
-  set(CMAKE_SKIP_BUILD_RPATH  FALSE)
-  set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
-  SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
+  # Setting the rules for installing a shared library
+  install(TARGETS libplcomparer
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  PUBLIC_HEADER DESTINATION /usr/local/include/PLcomparer
+  )
 
-  install(TARGETS ${PROJECT_NAME}-shared
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
-  
-  install(DIRECTORY include/
-      TYPE INCLUDE
-      COMPONENT ${PROJECT_NAME}-shared)
-
-  install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_BINDIR})   
+  # Setting up rules for installing the executable and associated shared library
+  install(TARGETS ${PROJECT_NAME}
+  DESTINATION ${CMAKE_INSTALL_BINDIR}
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  )
 endif()
