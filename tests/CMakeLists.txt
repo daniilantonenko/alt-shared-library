@@ -9,7 +9,7 @@ target_link_libraries (Boost_Tests_run PRIVATE
     ${Boost_FILESYSTEM_LIBRARY}
     ${Boost_SYSTEM_LIBRARY}
     ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
-    PLcomparer-shared 
+    libplcomparer 
     CURL::libcurl)
 
 add_test(Tests Boost_Tests_run)
