@@ -10,34 +10,29 @@ namespace PackageListComparer
 		return size * nmemb;
 	}
 
-	std::vector<int> splitVersion(const std::string &version)
+	std::vector<std::string> splitVersion(const std::string &version)
 	{
-		std::vector<int> result;
-		size_t start = 0;
-		size_t end = version.find('.');
-		std::string substring;
+		std::vector<std::string> result;
+		std::string temp = "";
 
-		while (end != std::string::npos)
+		for (char c : version)
 		{
-
-			std::string substring = version.substr(start, end - start);
-
-			if (!substring.empty() && std::all_of(substring.begin(), substring.end(), ::isdigit))
+			if (c == '.')
 			{
-				result.push_back(std::stoi(substring));
+				result.push_back(temp);
+				temp = "";
 			}
-
-			start = end + 1;
-			end = version.find('.', start);
+			else
+			{
+				temp += c;
+			}
 		}
 
-		substring = version.substr(start);
-
-		// skipping strings with letters
-		if (!substring.empty() && std::all_of(substring.begin(), substring.end(), ::isdigit))
+		if (!temp.empty())
 		{
-			result.push_back(std::stoi(substring));
+			result.push_back(temp);
 		}
+
 		return result;
 	}
 
@@ -47,16 +42,24 @@ namespace PackageListComparer
 		std::replace(first.begin(), first.end(), '_', '.');
 		std::replace(second.begin(), second.end(), '_', '.');
 
-		std::vector<int> version1 = splitVersion(first);
-		std::vector<int> version2 = splitVersion(second);
+		std::vector<std::string> version1 = splitVersion(first);
+		std::vector<std::string> version2 = splitVersion(second);
 
-		int maxLength = std::max(version1.size(), version2.size());
+		size_t maxLength = std::max(version1.size(), version2.size());
 
-		for (int i = 0; i < maxLength; ++i)
+		for (size_t i = 0; i < maxLength; i++)
 		{
+			int value1 = 0;
+			if (i < version1.size())
+			{
+				value1 = std::atoi(version1[i].c_str());
+			}
 
-			int value1 = (i < version1.size()) ? version1[i] : 0;
-			int value2 = (i < version2.size()) ? version2[i] : 0;
+			int value2 = 0;
+			if (i < version2.size())
+			{
+				value2 = std::atoi(version2[i].c_str());
+			}
 
 			if (value1 > value2)
 			{

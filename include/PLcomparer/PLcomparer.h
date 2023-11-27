@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <cstdlib>
 #include <curl/curl.h>
 #include <nlohmann/json.hpp>
 
