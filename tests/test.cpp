@@ -53,15 +53,22 @@ BOOST_AUTO_TEST_CASE(version_up_comparing)
 {
     // Comparison with the result the first version is greater than the second
 
-    BOOST_CHECK(PackageListComparer::CompareVersions("9.6.3", "1.3.0") == 1);
-    BOOST_CHECK(PackageListComparer::CompareVersions("0.0.26", "0.0.23b") == 1);
-    BOOST_CHECK(PackageListComparer::CompareVersions("0.7.3.git3a25392", "0.6svn") == 1);
-    BOOST_CHECK(PackageListComparer::CompareVersions("10", "p9") == 1);
-    BOOST_CHECK(PackageListComparer::CompareVersions("0.9.6", "0.9.3b.0.31.git701e3a3") == 1);
-    BOOST_CHECK(PackageListComparer::CompareVersions("0.3.2", "0+bzr726") == 1);
-    BOOST_CHECK(PackageListComparer::CompareVersions("1.57", "1.55_04") == 1);
-    BOOST_CHECK(PackageListComparer::CompareVersions("4.4_1.0.1", "4.4_0.94") == 1);
-    
-}
+    // is newer
+    BOOST_CHECK(PackageListComparer::CompareVersions("2.0", "1.0") == 1);
+    BOOST_CHECK(PackageListComparer::CompareVersions("1.0010", "1.9") == 1);
+    BOOST_CHECK(PackageListComparer::CompareVersions("1.0", "1") == 1);
+    BOOST_CHECK(PackageListComparer::CompareVersions("2.50", "2.5") == 1);
+    BOOST_CHECK(PackageListComparer::CompareVersions("1.0", "1.fc4") == 1);
 
+    // is equal 
+    BOOST_CHECK(PackageListComparer::CompareVersions("1", "1") == 0);
+    BOOST_CHECK(PackageListComparer::CompareVersions("fc4", "fc.4") == 0);
+    BOOST_CHECK(PackageListComparer::CompareVersions("1.05", "1.5") == 0);
+    BOOST_CHECK(PackageListComparer::CompareVersions("3.0.0_fc", "3.0.0.fc") == 0);  
+
+    // is older 
+    BOOST_CHECK(PackageListComparer::CompareVersions("ab2.cd.e1", "ab3.cd.e1") == -1);
+    BOOST_CHECK(PackageListComparer::CompareVersions("2b", "2.0") == -1);
+    BOOST_CHECK(PackageListComparer::CompareVersions("FC5", "fc4") == -1);
+}
 BOOST_AUTO_TEST_SUITE_END()
