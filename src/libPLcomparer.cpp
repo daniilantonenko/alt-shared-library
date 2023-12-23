@@ -10,65 +10,119 @@ namespace PackageListComparer
 		return size * nmemb;
 	}
 
+	size_t findSplitter(const std::string s, int start = 0)
+	{
+		char prev, curr;
+
+		for (int i = start; i < s.length(); i++)
+		{
+			curr = s[i];
+			if ((isalpha(prev) && isdigit(curr)) || (isdigit(prev) && isalpha(curr)))
+			{
+				// Number has changed to a letter or vice versa
+				return i;
+			}
+			else if (isalnum(curr) && ispunct(prev))
+			{
+				// Number or letter has changed to a separator
+				return i - 1;
+			}
+			prev = s[i];
+		}
+
+		return -1;
+	}
+
 	std::vector<std::string> splitVersion(const std::string &version)
 	{
 		std::vector<std::string> result;
-		std::string temp = "";
+		size_t start = 0;
+		size_t end = findSplitter(version);
+		std::string substring;
 
-		for (char c : version)
+		while (end != std::string::npos)
 		{
-			if (c == '.')
-			{
-				result.push_back(temp);
-				temp = "";
-			}
-			else
-			{
-				temp += c;
-			}
+
+			substring = version.substr(start, end - start);
+			result.push_back(substring);
+
+			// Bypassing the delimiter
+			start = (ispunct(version[end])) ? end + 1 : end;
+
+			end = findSplitter(version, start);
 		}
 
-		if (!temp.empty())
-		{
-			result.push_back(temp);
-		}
+		substring = version.substr(start);
+		result.push_back(substring);
 
 		return result;
 	}
 
 	int CompareVersions(std::string first, std::string second)
 	{
-		// Replace bad characters
-		std::replace(first.begin(), first.end(), '_', '.');
-		std::replace(second.begin(), second.end(), '_', '.');
+		std::vector<std::string> firstVector = splitVersion(first);
+		std::vector<std::string> secondVector = splitVersion(second);
 
-		std::vector<std::string> version1 = splitVersion(first);
-		std::vector<std::string> version2 = splitVersion(second);
+		// Conditions for determining the greatest:
+		// 1) The meaning of the first is Number, and the second is Letter
+		// 2) The value of the first is greater than the second
+		// 3) The number of values of the first is greater than the second
 
-		size_t maxLength = std::max(version1.size(), version2.size());
+		size_t i = 0;
+		size_t firstSize = firstVector.size(), secondSize = secondVector.size();
+		char firstChar, secondChar;
 
-		for (size_t i = 0; i < maxLength; i++)
+		while (i < std::min(firstSize, secondSize))
 		{
-			int value1 = 0;
-			if (i < version1.size())
-			{
-				value1 = std::atoi(version1[i].c_str());
-			}
+			firstChar = firstVector[i][0];
+			secondChar = secondVector[i][0];
 
-			int value2 = 0;
-			if (i < version2.size())
+			if (isdigit(firstChar) && !isdigit(secondChar))
 			{
-				value2 = std::atoi(version2[i].c_str());
-			}
-
-			if (value1 > value2)
-			{
+				// The first numeric is greater than the second literal
 				return 1;
 			}
-			else if (value1 < value2)
+			else if (!isdigit(firstChar) && isdigit(secondChar))
 			{
+				// The first literal is less than the second numeric
 				return -1;
 			}
+			else if (isdigit(firstChar) && isdigit(secondChar))
+			{
+				// Comparison of numeric values
+				if (stoi(firstVector[i]) > stoi(secondVector[i]))
+				{
+					return 1;
+				}
+				else if (stoi(firstVector[i]) < stoi(secondVector[i]))
+				{
+					return -1;
+				}
+			}
+			else if (!isdigit(firstChar) && !isdigit(secondChar))
+			{
+				// Comparison of literal values
+				if (firstVector[i].compare(secondVector[i]) > 0)
+				{
+					return 1;
+				}
+				else if (firstVector[i].compare(secondVector[i]) < 0)
+				{
+					return -1;
+				}
+			}
+
+			++i;
+		}
+
+		// Comparison by number of elements
+		if (firstSize > secondSize)
+		{
+			return 1;
+		}
+		else if (firstSize < secondSize)
+		{
+			return -1;
 		}
 
 		return 0;
